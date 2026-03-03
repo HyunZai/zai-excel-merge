@@ -1,0 +1,17 @@
+# 파이썬 기본
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# 가상환경
+.venv/
+venv/
+
+# PyInstaller 빌드 산출물
+build/
+dist/
+*.spec
+
+# OS 파일
+.DS_Store
