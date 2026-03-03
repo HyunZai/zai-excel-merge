@@ -98,7 +98,7 @@ class MergeWorker(QThread):
             self.log_signal.emit(f"❌ 치명적인 오류 발생: {e}")
             self.finished_signal.emit(False)
 
-# --- 1-2. 수험번호 검색 워커 스레드 (새로 추가됨) ---
+# --- 1-2. 키워드 검색 워커 스레드 (새로 추가됨) ---
 class SearchWorker(QThread):
     log_signal = Signal(str)
     finished_signal = Signal(bool)
@@ -110,7 +110,7 @@ class SearchWorker(QThread):
 
     def run(self):
         try:
-            self.log_signal.emit(f"\n🔎 '{self.keyword}' 수험번호 검색을 시작합니다...")
+            self.log_signal.emit(f"\n🔎 '{self.keyword}' 키워드 검색을 시작합니다...")
             found_files = []
 
             for file_path in self.file_paths:
@@ -131,12 +131,12 @@ class SearchWorker(QThread):
                     
                     if found_in_file:
                         found_files.append(filename)
-                        self.log_signal.emit(f"🎯 [발견] {filename} 파일에 해당 수험번호가 있습니다.")
+                        self.log_signal.emit(f"🎯 [발견] {filename} 파일에 해당 키워드가 있습니다.")
                 except Exception as e:
                     self.log_signal.emit(f"⚠️ {filename} 읽기 실패: {e}")
 
             if not found_files:
-                self.log_signal.emit(f"❌ 결과: 선택된 파일 중 '{self.keyword}' 수험번호를 찾을 수 없습니다.")
+                self.log_signal.emit(f"❌ 결과: 선택된 파일 중 '{self.keyword}' 키워드를 찾을 수 없습니다.")
             else:
                 self.log_signal.emit(f"✅ 검색 완료: 총 {len(found_files)}개의 파일에서 발견되었습니다.")
             
@@ -231,7 +231,7 @@ class MainWindow(QMainWindow):
             self.btn_search.setEnabled(True)
             
             self.log_console.append("✨ 이전 작업 내역이 초기화되었습니다.")
-            self.log_console.append(f"✅ {len(self.selected_files)}개의 파일이 새로 선택되었습니다. 병합을 시작하거나 수험번호를 검색해보세요.")
+            self.log_console.append(f"✅ {len(self.selected_files)}개의 파일이 새로 선택되었습니다. 병합을 시작하거나 키워드를 검색해보세요.")
 
     def start_merge(self):
         self.btn_select.setEnabled(False)
@@ -248,7 +248,7 @@ class MainWindow(QMainWindow):
     def start_search(self):
         keyword = self.input_search.text()
         if not keyword:
-            self.update_log("⚠️ 검색할 수험번호를 입력해주세요.")
+            self.update_log("⚠️ 검색할 키워드를 입력해주세요.")
             self.input_search.setFocus()
             return
 
