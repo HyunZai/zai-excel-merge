@@ -3,9 +3,10 @@ import os
 import shutil
 from datetime import datetime
 from PySide6.QtWidgets import (QApplication, QMainWindow, QPushButton, QVBoxLayout, 
-                               QLabel, QWidget, QFileDialog, QListWidget, QTextEdit, QHBoxLayout, QLineEdit)
-from PySide6.QtCore import Qt, QThread, Signal
-from PySide6.QtGui import QIcon
+                               QLabel, QWidget, QFileDialog, QListWidget, QTextEdit, QHBoxLayout, QLineEdit,
+                               QSizePolicy)
+from PySide6.QtCore import Qt, QThread, Signal, QUrl
+from PySide6.QtGui import QIcon, QDesktopServices
 import openpyxl
 
 
@@ -157,7 +158,7 @@ class SearchWorker(QThread):
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Excel 병합 및 검색 프로그램")
+        self.setWindowTitle("exMerge - 엑셀파일 단순 병합 프로그램")
         icon_path = resource_path("assets/zem-icon.ico")
         if os.path.exists(icon_path):
             self.setWindowIcon(QIcon(icon_path))
@@ -216,6 +217,34 @@ class MainWindow(QMainWindow):
         self.log_console.setReadOnly(True)
         self.log_console.setStyleSheet("background-color: #1E1E1E; color: #00FF00; font-family: monospace; font-size: 13px;")
         layout.addWidget(self.log_console)
+
+        # 하단: 제작자 정보 (GitHub 프로필 링크)
+        self.footer_label = QLabel("Made by hyunzai · GitHub", self)
+        # 텍스트 크기만큼만 너비를 가지도록 설정하고,
+        # 레이아웃 쪽에서 우측 정렬을 적용해 클릭 범위를 텍스트에만 한정
+        self.footer_label.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Preferred)
+        self.footer_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        self.footer_label.setCursor(Qt.PointingHandCursor)
+        self.footer_label.setStyleSheet("color:#555555; font-size:11px;")
+
+        def footer_enter_event(event):
+            self.footer_label.setStyleSheet("color:#2196F3; font-size:11px;")
+            return super(QLabel, self.footer_label).enterEvent(event)
+
+        def footer_leave_event(event):
+            self.footer_label.setStyleSheet("color:#555555; font-size:11px;")
+            return super(QLabel, self.footer_label).leaveEvent(event)
+
+        def footer_mouse_press_event(event):
+            if event.button() == Qt.LeftButton:
+                QDesktopServices.openUrl(QUrl("https://github.com/hyunzai"))
+            return super(QLabel, self.footer_label).mousePressEvent(event)
+
+        self.footer_label.enterEvent = footer_enter_event
+        self.footer_label.leaveEvent = footer_leave_event
+        self.footer_label.mousePressEvent = footer_mouse_press_event
+
+        layout.addWidget(self.footer_label, alignment=Qt.AlignRight)
 
     def select_files(self):
         files, _ = QFileDialog.getOpenFileNames(self, "엑셀 파일 선택", "", "Excel Files (*.xlsx *.xls)")
