@@ -5,7 +5,13 @@ from datetime import datetime
 from PySide6.QtWidgets import (QApplication, QMainWindow, QPushButton, QVBoxLayout, 
                                QLabel, QWidget, QFileDialog, QListWidget, QTextEdit, QHBoxLayout, QLineEdit)
 from PySide6.QtCore import Qt, QThread, Signal
+from PySide6.QtGui import QIcon
 import openpyxl
+
+
+def resource_path(relative_path: str) -> str:
+    base_path = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base_path, relative_path)
 
 # --- 1-1. 병합 처리 워커 스레드 ---
 class MergeWorker(QThread):
@@ -152,6 +158,9 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Excel 병합 및 검색 프로그램")
+        icon_path = resource_path("assets/zem-icon.ico")
+        if os.path.exists(icon_path):
+            self.setWindowIcon(QIcon(icon_path))
         self.setMinimumSize(700, 550) # 입력란이 추가되어 가로 길이를 조금 늘렸습니다.
         self.selected_files = []
 
@@ -274,6 +283,9 @@ class MainWindow(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    app_icon_path = resource_path("assets/zem-icon.ico")
+    if os.path.exists(app_icon_path):
+        app.setWindowIcon(QIcon(app_icon_path))
     window = MainWindow()
     window.show()
     sys.exit(app.exec())
